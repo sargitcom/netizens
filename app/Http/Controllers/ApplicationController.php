@@ -122,6 +122,12 @@ class ApplicationController extends Controller
         $images2Insert->rewind();
 
         $this->applicationModel->updatePhoto($images2Insert);
+        $images2Insert->rewind();
+
+        $this->applicationModel->insertAlbums($images2Insert);
+        $images2Insert->rewind();
+
+        $this->applicationModel->insertImage2AlbumLink($images2Insert);
     }
 
     protected function importNewImages(array $albumIds, PhotosCollection $images)
@@ -145,5 +151,11 @@ class ApplicationController extends Controller
         $images2Insert->rewind();
 
         $this->applicationModel->insertPhoto($images2Insert);
+        $images2Insert->rewind();
+
+        $this->applicationModel->insertAlbums($images2Insert);
+        $images2Insert->rewind();
+
+        $this->applicationModel->insertImage2AlbumLink($images2Insert);
     }
 }
