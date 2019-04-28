@@ -13,3 +13,4 @@
 
 Route::match(['get', 'post'], '/', ['uses' => 'ApplicationController@index']);
 
+Route::match(['post'], '/download-images', ['uses' => 'ApplicationController@downloadImages']);

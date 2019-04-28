@@ -2,17 +2,17 @@
 
 namespace App\Http\Collections;
 
-use App\Resources\Entity\Domain;
+use App\Http\Entities\PhotoEntity;
 
-class DomainCollection extends Collection
+class PhotosCollection extends Collection
 {
-    public function current(): Domain
+    public function current(): PhotoEntity
     {
         return $this->array[$this->position];
     }
 
-    public function append(Domain $domain)
+    public function append(PhotoEntity $photo)
     {
-        $this->array[$this->position++] = $domain;
+        $this->array[$this->position++] = $photo;
     }
 }

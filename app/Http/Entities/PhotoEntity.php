@@ -2,6 +2,8 @@
 
 namespace App\Http\Entities;
 
+use App\Http\ValueObjects\Url;
+
 class PhotoEntity
 {
     /**
@@ -15,12 +17,12 @@ class PhotoEntity
     protected $title;
 
     /**
-     * @var \App\ValueObjects\Url
+     * @var Url
      */
     protected $url;
 
     /**
-     * @var \App\ValueObjects\Url
+     * @var Url
      */
     protected $thumbnailUrl;
 
@@ -28,10 +30,10 @@ class PhotoEntity
      * PhotoEntity constructor.
      * @param int $id
      * @param string $title
-     * @param \App\ValueObjects\Url $url
-     * @param \App\ValueObjects\Url $thumbnailUrl
+     * @param Url $url
+     * @param Url $thumbnailUrl
      */
-    public function __construct(int $id, string $title, \App\ValueObjects\Url $url, \App\ValueObjects\Url $thumbnailUrl)
+    public function __construct(int $id, string $title, Url $url, Url $thumbnailUrl)
     {
         $this->id = $id;
         $this->title = $title;
@@ -56,17 +58,17 @@ class PhotoEntity
     }
 
     /**
-     * @return \App\ValueObjects\Url
+     * @return Url
      */
-    public function getUrl(): \App\ValueObjects\Url
+    public function getUrl(): Url
     {
         return $this->url;
     }
 
     /**
-     * @return \App\ValueObjects\Url
+     * @return Url
      */
-    public function getThumbnailUrl(): \App\ValueObjects\Url
+    public function getThumbnailUrl(): Url
     {
         return $this->thumbnailUrl;
     }
