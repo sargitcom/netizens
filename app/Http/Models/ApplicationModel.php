@@ -190,7 +190,24 @@ if (!empty($data)) {
 
     public function updatePhotoById($id, $title, $description, $author)
     {
-        
+        $sql = <<<QUERY
+update photos
+set 
+    title = :title, 
+    description = :description, 
+    author = :author
+where
+    photo_id = :photo_id
+QUERY;
+
+        $binding = [
+            'title' => $title,
+            'description' => $description,
+            'author' => $author,
+            'photo_id' => $id
+        ];
+
+        \DB::update($sql, $binding);
     }
 
     public function insertAlbums(PhotosCollection $images)

@@ -54,7 +54,7 @@ class ApplicationController extends Controller
 
             $this->applicationModel->updatePhotoById($id, $title, $description, $author);
 
-            redirect('/photo/edit/' . $id);
+            return redirect('/photo/edit/' . $id);
         }
 
         return View('edit-image', ['data' => $image]);
@@ -154,10 +154,7 @@ class ApplicationController extends Controller
         $this->applicationModel->updatePhoto($images2Insert);
         $images2Insert->rewind();
 
-        $this->applicationModel->insertAlbums($images2Insert);
-        $images2Insert->rewind();
-
-        $this->applicationModel->insertImage2AlbumLink($images2Insert);
+        $this->createAlbumMetaData($images2Insert);
     }
 
     protected function importNewImages(array $albumIds, PhotosCollection $images)
@@ -183,6 +180,11 @@ class ApplicationController extends Controller
         $this->applicationModel->insertPhoto($images2Insert);
         $images2Insert->rewind();
 
+        $this->createAlbumMetaData($images2Insert);
+    }
+
+    protected function createAlbumMetaData(PhotosCollection $images2Insert)
+    {
         $this->applicationModel->insertAlbums($images2Insert);
         $images2Insert->rewind();
 

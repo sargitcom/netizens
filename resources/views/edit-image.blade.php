@@ -43,9 +43,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label>Opis</label>
-                        <textarea class="form form-control" name="description" placeholder="Wpisz opis...">
-                            <?= $data->getDescription(); ?>
-                        </textarea>
+                        <textarea class="form form-control" name="description" placeholder="Wpisz opis..."><?= $data->getDescription(); ?></textarea>
                     </div>
                 </div>
                 <div class="row">
