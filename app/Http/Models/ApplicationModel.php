@@ -4,6 +4,7 @@ namespace App\Http\Models;
 
 use App\Http\Collections\PhotosCollection;
 use App\Http\Entities\PhotoEntity;
+use App\Http\ValueObjects\Url;
 
 class ApplicationModel
 {
@@ -24,6 +25,57 @@ QUERY;
 
 
 
+    }
+
+    public function getPhotosByPage(int $page, int $limit = 50) : array
+    {
+        $offset = ($page - 1) * $limit;
+
+        $sql = <<<QUERY
+select
+photo_id, title, url, thumbnail_url, description, author
+from photos
+order by photo_id asc 
+limit :offset, :limit
+QUERY;
+
+        // zamiast ponizeszej kwerendy mozna uzyc w poprzedniej SQL_CALC_FOUND_ROWS
+        $sqlCount = <<<QUERY
+select
+count(photo_id) as total
+from photos
+QUERY;
+
+        $binding = [
+          ':limit' => $limit,
+          ':offset' => $offset
+        ];
+
+        $pc = new PhotosCollection();
+
+        $results = \DB::select($sql, $binding);
+
+        $count = count($results);
+
+        foreach ($results as $photo) {
+            $pc->append(new PhotoEntity(
+                $photo->photo_id,
+                $photo->title,
+                new Url($photo->url),
+                new Url($photo->thumbnail_url),
+                $photo->description,
+                $photo->author
+            ));
+        }
+
+        $pc->setTotal($count);
+
+        $pc->rewind();
+
+        $resultCount = \DB::selectOne($sqlCount, $binding);
+
+
+        return ['pc' => $pc, 'total' => $resultCount->total];
     }
 
     public function insertPhoto(PhotosCollection $images)

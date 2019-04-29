@@ -30,6 +30,13 @@ class ApplicationController extends Controller
         return View('welcome', ['data' => $data]);
     }
 
+    public function listImages(Request $request, $page = 1)
+    {
+        $pc = $this->applicationModel->getPhotosByPage($page);
+
+        return View('images', ['data' => $pc]);
+    }
+
     public function downloadImages(Request $request)
     {
         $downloadType = $request->post('import-type');
