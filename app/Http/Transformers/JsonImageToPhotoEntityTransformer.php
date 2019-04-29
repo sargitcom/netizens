@@ -14,6 +14,8 @@ class JsonImageToPhotoEntityTransformer
             $image->title,
             new Url($image->url),
             new Url($image->thumbnailUrl),
+            '',
+            '',
             $image->albumId
         );
     }

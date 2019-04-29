@@ -53,6 +53,22 @@
                             ?>
                         </tbody>
                     </table>
+
+                    <?php
+                        if ($page > 1) {
+                            ?>
+                                <a href="{{ url('/images-list/' . ($page - 1)) }}">&lt;&lt;</a>
+                            <?php
+                        }
+
+                        $maxPages = ceil($data['total'] / 50);
+
+                        if ($page < $maxPages) {
+                            ?>
+                                <a href="{{ url('/images-list/' . ($page + 1)) }}">&gt;&gt;</a>
+                            <?php
+                        }
+                    ?>
                 </div>
             </div>
         </div>

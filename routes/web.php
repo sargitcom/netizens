@@ -17,3 +17,5 @@ Route::match(['post'], '/download-images', ['uses' => 'ApplicationController@dow
 
 Route::match(['get'], '/images-list/{page}', ['uses' => 'ApplicationController@listImages']);
 Route::match(['get'], '/images-list', ['uses' => 'ApplicationController@listImages']);
+
+Route::match(['get', 'post'], '/photo/edit/{id}', ['uses' => 'ApplicationController@editImage']);

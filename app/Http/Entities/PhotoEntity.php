@@ -27,18 +27,32 @@ class PhotoEntity
     protected $thumbnailUrl;
 
     /**
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * @var string
+     */
+    protected $author;
+
+    /**
      * PhotoEntity constructor.
      * @param int $id
      * @param string $title
      * @param Url $url
      * @param Url $thumbnailUrl
+     * @param string $description
+     * @param string $author
      */
-    public function __construct(int $id, string $title, Url $url, Url $thumbnailUrl)
+    public function __construct(int $id, string $title, Url $url, Url $thumbnailUrl, string $description = '', string $author = '')
     {
         $this->id = $id;
         $this->title = $title;
         $this->url = $url;
         $this->thumbnailUrl = $thumbnailUrl;
+        $this->description = $description;
+        $this->author = $author;
     }
 
     /**
@@ -71,5 +85,21 @@ class PhotoEntity
     public function getThumbnailUrl(): Url
     {
         return $this->thumbnailUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthor(): string
+    {
+        return $this->author;
     }
 }

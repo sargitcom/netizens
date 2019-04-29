@@ -30,11 +30,34 @@ class ApplicationController extends Controller
         return View('welcome', ['data' => $data]);
     }
 
-    public function listImages(Request $request, $page = 1)
+    public function listImages(Request $request, int $page = 1)
     {
         $pc = $this->applicationModel->getPhotosByPage($page);
 
-        return View('images', ['data' => $pc]);
+        return View('images', ['data' => $pc, 'page' => $page]);
+    }
+
+    public function editImage(Request $request, int $id)
+    {
+        $image = null;
+
+        try {
+            $image = $this->applicationModel->getPhotoById($id);
+        } catch (\Exception $e) {
+            return redirect('/');
+        }
+
+        if ($request->isMethod('post')) {
+            $title = $request->post('title');
+            $description = $request->post('description');
+            $author = $request->post('author');
+
+            $this->applicationModel->updatePhotoById($id, $title, $description, $author);
+
+            redirect('/photo/edit/' . $id);
+        }
+
+        return View('edit-image', ['data' => $image]);
     }
 
     public function downloadImages(Request $request)
@@ -81,7 +104,7 @@ class ApplicationController extends Controller
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1) ;
 
-        $result = curl_exec ($ch) ;
+        $result = curl_exec($ch) ;
 
         curl_close($ch);
 

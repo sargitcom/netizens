@@ -2,6 +2,7 @@
 
 namespace App\Http\Models;
 
+use App\Exceptions\NoPhotoExistsException;
 use App\Http\Collections\PhotosCollection;
 use App\Http\Entities\PhotoEntity;
 use App\Http\ValueObjects\Url;
@@ -76,6 +77,35 @@ QUERY;
 
 
         return ['pc' => $pc, 'total' => $resultCount->total];
+    }
+
+    public function getPhotoById(int $id) : PhotoEntity
+    {
+        $sql = <<<QUERY
+select
+photo_id, title, url, thumbnail_url, description, author
+from photos
+where photo_id = :photo_id
+QUERY;
+
+        $binding = [
+            ':photo_id' => $id,
+        ];
+
+        $photo = \DB::selectOne($sql, $binding);
+
+        if (empty($photo)) {
+            throw new NoPhotoExistsException();
+        }
+
+        return new PhotoEntity(
+            $photo->photo_id,
+            $photo->title,
+            new Url($photo->url),
+            new Url($photo->thumbnail_url),
+            $photo->description,
+            $photo->author
+        );
     }
 
     public function insertPhoto(PhotosCollection $images)
@@ -156,6 +186,11 @@ if (!empty($data)) {
         }
 
         \DB::commit();
+    }
+
+    public function updatePhotoById($id, $title, $description, $author)
+    {
+        
     }
 
     public function insertAlbums(PhotosCollection $images)

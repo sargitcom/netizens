@@ -12,17 +12,20 @@ class ExtendedPhotoEntity extends PhotoEntity
     protected $albumId;
 
     /**
-     * PhotoEntity constructor.
+     * ExtendedPhotoEntity constructor.
      * @param int $id
      * @param string $title
      * @param Url $url
      * @param Url $thumbnailUrl
+     * @param string $description
+     * @param string $author
+     * @param int $albumId
      */
-    public function __construct(int $id, string $title, Url $url, Url $thumbnailUrl, int $albumId)
+    public function __construct(int $id, string $title, Url $url, Url $thumbnailUrl, string $description, string $author, int $albumId)
     {
         $this->albumId = $albumId;
 
-        parent::__construct($id, $title, $url, $thumbnailUrl);
+        parent::__construct($id, $title, $url, $thumbnailUrl, $description, $author);
     }
 
     /**
