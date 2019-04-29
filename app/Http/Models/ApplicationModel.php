@@ -3,7 +3,9 @@
 namespace App\Http\Models;
 
 use App\Exceptions\NoPhotoExistsException;
+use App\Http\Collections\AlbumsCollection;
 use App\Http\Collections\PhotosCollection;
+use App\Http\Entities\AlbumEntity;
 use App\Http\Entities\PhotoEntity;
 use App\Http\ValueObjects\Url;
 
@@ -11,21 +13,84 @@ class ApplicationModel
 {
     const LIMIT_NONE = null;
 
-    public function createAlbum(string $name)
+    public function addImage2Album(int $albumId, int $imageId)
     {
+        $query = <<<QUERY
+insert into photos_2_album(album_id, photo_id)
+select * from (select :album_id as alb_id, :photo_id as pht_id) as tmp
+where not exists(
+    select album_id, photo_id from photos_2_album where album_id = :album_id_2 and photo_id = :photo_id_2
+)
+QUERY;
 
+            $binding = [
+                ':photo_id' => $imageId,
+                ':album_id' => $albumId,
+                ':photo_id_2' => $imageId,
+                ':album_id_2' => $albumId,
+            ];
+
+            \DB::insert($query, $binding);
     }
 
-    public function getAlbums()
+    public function getAlbumById(int $id)
     {
         $sql = <<<QUERY
 select
     album_id,
     title,
-from albums
+    added,
+    deleted
+from album
+where album_id = :album_id
+QUERY;
+
+        $album = \DB::selectOne($sql, [':album_id' => $id]);
+
+        if (empty($album)) {
+            throw new \Exception('To nie jest nazwany exception');
+        }
+
+        return new AlbumEntity(
+            $album->album_id,
+            $album->title,
+            new \DateTime($album->added),
+            $album->deleted === null ? null : new \DateTime($album->deleted)
+        );
+    }
+
+    public function getAlbums() : AlbumsCollection
+    {
+        $sql = <<<QUERY
+select
+    album_id,
+    title,
+    added,
+    deleted
+from album
 where deleted is null
 QUERY;
 
+        $results = \DB::select($sql, []);
+
+        $ac = new AlbumsCollection();
+
+        $count = count($results);
+
+        foreach ($results as $album) {
+            $ac->append(new AlbumEntity(
+                $album->album_id,
+                $album->title,
+                new \DateTime($album->added),
+                $album->deleted === null ? null : new \DateTime($album->deleted)
+            ));
+        }
+
+        $ac->setTotal($count);
+
+        $ac->rewind();
+
+        return $ac;
     }
 
     public function getPhotosByPage(int $page, ?int $limit = 50) : array
@@ -91,6 +156,55 @@ QUERY;
 
         $resultCount = \DB::selectOne($sqlCount, $binding);
 
+        return ['pc' => $pc, 'total' => $resultCount->total];
+    }
+
+    public function getAlbumPhotosById(int $albumId) : array
+    {
+            $sql = <<<QUERY
+select
+p.photo_id, title, url, thumbnail_url, description, author
+from photos as p
+join photos_2_album as p2a on p.photo_id = p2a.photo_id
+where p2a.album_id = :album_id
+order by p.photo_id asc
+QUERY;
+
+        $binding = [
+            ':album_id' => $albumId
+        ];
+
+        $results = \DB::select($sql, $binding);
+
+        // zamiast ponizeszej kwerendy mozna uzyc w poprzedniej SQL_CALC_FOUND_ROWS
+        $sqlCount = <<<QUERY
+select
+count(p.photo_id) as total
+from photos as p
+join photos_2_album as p2a on p.photo_id = p2a.photo_id
+where p2a.album_id = :album_id
+QUERY;
+
+        $pc = new PhotosCollection();
+
+        $count = count($results);
+
+        foreach ($results as $photo) {
+            $pc->append(new PhotoEntity(
+                $photo->photo_id,
+                $photo->title,
+                new Url($photo->url),
+                new Url($photo->thumbnail_url),
+                $photo->description,
+                $photo->author
+            ));
+        }
+
+        $pc->setTotal($count);
+
+        $pc->rewind();
+
+        $resultCount = \DB::selectOne($sqlCount, $binding);
 
         return ['pc' => $pc, 'total' => $resultCount->total];
     }

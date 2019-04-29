@@ -37,6 +37,37 @@ class ApplicationController extends Controller
         return View('images', ['data' => $pc, 'page' => $page]);
     }
 
+    public function listAlbums()
+    {
+        $ac = $this->applicationModel->getAlbums();
+
+        return View('albums', ['ac' => $ac]);
+    }
+
+    public function editAlbum(Request $request, int $id)
+    {
+        $album = null;
+
+        try {
+            $album = $this->applicationModel->getAlbumById($id);
+        } catch (\Exception $e) {
+            return redirect('/');
+        }
+
+        if ($request->isMethod('post')) {
+            $imageId = $request->post('photo-id');
+
+            $this->applicationModel->addImage2Album($id, $imageId);
+
+            return redirect('/album/edit/' . $id);
+        }
+
+        $photos = $this->applicationModel->getAlbumPhotosById($id);
+        $pc = $this->applicationModel->getPhotosByPage(1, ApplicationModel::LIMIT_NONE);
+
+        return View('edit-album', ['data' => $album, 'photos' => $photos, 'pc' => $pc]);
+    }
+
     public function editImage(Request $request, int $id)
     {
         $image = null;

@@ -19,3 +19,7 @@ Route::match(['get'], '/images-list/{page}', ['uses' => 'ApplicationController@l
 Route::match(['get'], '/images-list', ['uses' => 'ApplicationController@listImages']);
 
 Route::match(['get', 'post'], '/photo/edit/{id}', ['uses' => 'ApplicationController@editImage']);
+
+Route::match(['get'], '/albums', ['uses' => 'ApplicationController@listAlbums']);
+
+Route::match(['get', 'post'], '/album/edit/{id}', ['uses' => 'ApplicationController@editAlbum']);

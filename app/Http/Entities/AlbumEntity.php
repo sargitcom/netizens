@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Entities;
+
 class AlbumEntity
 {
     /**
@@ -29,7 +31,7 @@ class AlbumEntity
      * @param DateTime $added
      * @param DateTime|null $deleted
      */
-    public function __construct(int $id, string $title, DateTime $added, ?DateTime $deleted)
+    public function __construct(int $id, string $title, \DateTime $added, ?\DateTime $deleted)
     {
         $this->id = $id;
         $this->title = $title;
