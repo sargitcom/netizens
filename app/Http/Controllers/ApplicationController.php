@@ -190,4 +190,32 @@ class ApplicationController extends Controller
 
         $this->applicationModel->insertImage2AlbumLink($images2Insert);
     }
+
+    /**
+     * API
+     */
+
+    public function apiGetImages()
+    {
+        $images = $this->applicationModel->getPhotosByPage(1, ApplicationModel::LIMIT_NONE);
+
+        $response = [];
+
+        while ($images['pc']->valid()) {
+            $image = $images['pc']->current();
+
+            $response[] = [
+                "id" => $image->getId(),
+                "title" => $image->getTitle(),
+                "url" => $image->getUrl(),
+                "thumbnailUrl" => $image->getThumbnailUrl(),
+                "author" => $image->getAuthor(),
+                "description" => $image->getDescription()
+            ];
+
+            $images['pc']->next();
+        }
+
+        return response()->json($response, 200);
+    }
 }

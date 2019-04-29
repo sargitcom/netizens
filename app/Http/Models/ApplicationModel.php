@@ -9,6 +9,8 @@ use App\Http\ValueObjects\Url;
 
 class ApplicationModel
 {
+    const LIMIT_NONE = null;
+
     public function createAlbum(string $name)
     {
 
@@ -24,21 +26,42 @@ from albums
 where deleted is null
 QUERY;
 
-
-
     }
 
-    public function getPhotosByPage(int $page, int $limit = 50) : array
+    public function getPhotosByPage(int $page, ?int $limit = 50) : array
     {
-        $offset = ($page - 1) * $limit;
+        if ($limit !== self::LIMIT_NONE) {
+            $offset = ($page - 1) * $limit;
 
-        $sql = <<<QUERY
+            $sql = <<<QUERY
 select
 photo_id, title, url, thumbnail_url, description, author
 from photos
 order by photo_id asc 
 limit :offset, :limit
 QUERY;
+
+            $binding = [
+                ':limit' => $limit,
+                ':offset' => $offset
+            ];
+
+            $results = \DB::select($sql, $binding);
+        } else {
+            $offset = ($page - 1) * $limit;
+
+            $sql = <<<QUERY
+select
+photo_id, title, url, thumbnail_url, description, author
+from photos
+order by photo_id asc
+QUERY;
+
+            $binding = [];
+
+            $results = \DB::select($sql, $binding);
+        }
+
 
         // zamiast ponizeszej kwerendy mozna uzyc w poprzedniej SQL_CALC_FOUND_ROWS
         $sqlCount = <<<QUERY
@@ -47,14 +70,7 @@ count(photo_id) as total
 from photos
 QUERY;
 
-        $binding = [
-          ':limit' => $limit,
-          ':offset' => $offset
-        ];
-
         $pc = new PhotosCollection();
-
-        $results = \DB::select($sql, $binding);
 
         $count = count($results);
 
