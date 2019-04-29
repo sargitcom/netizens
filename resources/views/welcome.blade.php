@@ -13,13 +13,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <?php
-                        var_dump($data);
-                    ?>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 text-center">
                     <h1>Aplikacja </h1>
                 </div>
                 <div class="col-md-12">
